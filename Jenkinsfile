@@ -33,6 +33,7 @@ pipeline {
 		stage('Code Analysis'){
 			steps{
 				script{
+					echo "Code Analysis"
 					//sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube:9000  -DskipTests=true"
 				}
             }
