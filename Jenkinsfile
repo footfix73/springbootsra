@@ -5,10 +5,6 @@ pipeline {
 		label 'maven'
 	}
 
-	parameters {
-		string(name: 'GIT_REPO', description: 'https://github.com/footfix73/springbootsra.git')
-	}
-
 	stages {
 		stage('Build App') {
 			steps {
