@@ -1,0 +1,4 @@
+com\zeta\springboot\application\Application.class
+com\zeta\springboot\application\controller\ApiRestController.class
+com\zeta\springboot\application\model\Candidate.class
+com\zeta\springboot\application\util\CandidatesUtil.class

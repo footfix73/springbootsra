@@ -1,4 +1,4 @@
-appName = "demo-1-app"
+appName = "springbootsra"
 
 pipeline {
 	agent {
@@ -6,19 +6,18 @@ pipeline {
 	}
 
 	parameters {
-		string(name: 'GIT_REPO', description: 'https://github.com/footfix73/k8s_istio.git')
+		string(name: 'GIT_REPO', description: 'https://github.com/footfix73/springbootsra.git')
 	}
 
 	stages {
 		stage('Build App') {
 			steps {
-				git branch: 'main', url: 'https://github.com/footfix73/k8s_istio.git'
+				git branch: 'main', url: 'https://github.com/footfix73/springbootsra.git'
 				
-				//script {
-				//	def pom = readMavenPom file: 'pom.xml'
-				//	version = pom.version
-				//}
-				sh "mvn -f /demo_k8s_istio_1"
+				script {
+					def pom = readMavenPom file: 'pom.xml'
+					version = pom.version
+				}
 				sh "mvn clean install -DskipTests=true"
             }
 		}
@@ -44,7 +43,7 @@ pipeline {
 				expression {
 					openshift.withCluster() {
 						openshift.withProject(env.DEV_PROJECT) {
-							return !openshift.selector("bc", "demo-1-app").exists();
+							return !openshift.selector("bc", "springbootsra").exists();
 						}
 					}
 				}
@@ -53,7 +52,7 @@ pipeline {
 				script {
 					openshift.withCluster() {
 						openshift.withProject(env.DEV_PROJECT) {
-							openshift.newBuild("--name=demo-1-app", "--image-stream=redhat-openjdk18-openshift:latest", "--binary=true")
+							openshift.newBuild("--name=springbootsra", "--image-stream=redhat-openjdk18-openshift:latest", "--binary=true")
 						}
 					}
 				}
