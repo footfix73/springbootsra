@@ -43,7 +43,7 @@ pipeline {
 			when {
 				expression {
 					openshift.withCluster() {
-						openshift.withProject(env.DEV_PROJECT) {
+						openshift.withProject("vicentegarcia-dev") {
 							return !openshift.selector("bc", "springbootsra").exists();
 						}
 					}
@@ -52,7 +52,7 @@ pipeline {
             steps {
 				script {
 					openshift.withCluster() {
-						openshift.withProject(env.DEV_PROJECT) {
+						openshift.withProject("vicentegarcia-dev") {
 							openshift.newBuild("--name=springbootsra", "--image-stream=redhat-openjdk18-openshift:latest", "--binary=true")
 						}
 					}
@@ -68,7 +68,7 @@ pipeline {
 
 				script {
 					openshift.withCluster() {
-						openshift.withProject(env.DEV_PROJECT) {
+						openshift.withProject("vicentegarcia-dev") {
 							openshift.selector("bc", "demo-1-app").startBuild("--from-dir=./ocp","--follow", "--wait=true")
 						}
 					}
@@ -80,7 +80,7 @@ pipeline {
 			when {
 				expression {
 					openshift.withCluster() {
-						openshift.withProject(env.DEV_PROJECT) {
+						openshift.withProject("vicentegarcia-dev") {
 							return !openshift.selector('dc', 'demo-1-app').exists()
 						}
 					}
@@ -90,7 +90,7 @@ pipeline {
             steps {
 				script {
 					openshift.withCluster() {
-						openshift.withProject(env.DEV_PROJECT) {
+						openshift.withProject("vicentegarcia-dev") {
 							def app = openshift.newApp("demo-1-app:latest")
 							app.narrow("svc").expose();
 
@@ -113,7 +113,7 @@ pipeline {
 			steps {
 				script {
 					openshift.withCluster() {
-						openshift.withProject(env.DEV_PROJECT) {
+						openshift.withProject("vicentegarcia-dev") {
 							openshift.selector("dc", "demo-1-app").rollout().latest();
 						}
 					}
