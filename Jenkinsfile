@@ -53,7 +53,7 @@ pipeline {
 				script {
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
-							openshift.newBuild("--name=springbootsra", "--image-stream=registry.redhat.io/openjdk/openjdk-11-rhel8", "--binary=true")
+							openshift.newBuild("--name=springbootsra", "--image-stream=registry.redhat.io/openjdk/openjdk-11-rhel7", "--binary=true")
 						}
 					}
 				}
