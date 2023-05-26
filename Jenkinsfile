@@ -79,7 +79,7 @@ pipeline {
 				expression {
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
-							return !openshift.selector('dc', 'springbootsra').exists()
+							return !openshift.selector("dc", "springbootsra").exists()
 						}
 					}
 				}
@@ -93,14 +93,14 @@ pipeline {
 							def app = openshift.newApp("springbootsra:latest")
 							app.narrow("svc").expose();
 			
-			//				openshift.set("probe dc/springbootsra --readiness --get-url=http://:8080/actuator/health --initial-delay-seconds=30 --failure-threshold=10 --period-seconds=10")
-			//				openshift.set("probe dc/springbootsra --liveness  --get-url=http://:8080/actuator/health --initial-delay-seconds=180 --failure-threshold=10 --period-seconds=10")
-			//
-			//				def dc = openshift.selector("dc", "springbootsra")
-			//				while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
-			//					sleep 10
-			//				}
-			//				openshift.set("triggers", "dc/springbootsra", "--manual")
+							openshift.set("probe dc/springbootsra --readiness --get-url=http://:8080/actuator/health --initial-delay-seconds=30 --failure-threshold=10 --period-seconds=10")
+							openshift.set("probe dc/springbootsra --liveness  --get-url=http://:8080/actuator/health --initial-delay-seconds=180 --failure-threshold=10 --period-seconds=10")
+			
+							def dc = openshift.selector("dc", "springbootsra")
+							while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
+								sleep 10
+							}
+							openshift.set("triggers", "dc/springbootsra", "--manual")
 						}
 					}
 				}
@@ -110,16 +110,17 @@ pipeline {
 		stage('Deploy DEV') {
 			steps {
 				script {
+					echo "Deploy DEV"
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
-							//openshift.selector("dc", "springbootsra").rollout().latest();
+							openshift.selector("dc", "springbootsra").rollout().latest();
 
 							if(!deployment.exists()){ 
-                				openshift.newApp('springbootsra', "--as-deployment-config").narrow('svc').expose() 
+                				openshift.newApp("springbootsra", "--as-deployment-config").narrow("svc").expose() 
               				} 
     
               				timeout(5) { 
-                				openshift.selector("dc", "springbootsra").related('pods').untilEach(1) { 
+                				openshift.selector("dc", "springbootsra").related("pods").untilEach(1) { 
                   					return (it.object().status.phase == "Running") 
                 				} 
               				}
