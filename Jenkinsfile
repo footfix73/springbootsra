@@ -101,7 +101,7 @@ pipeline {
 			//					sleep 10
 			//				}
 			//				openshift.set("triggers", "dc/springbootsra", "--manual")
-			//			}
+						}
 					}
 				}
             }
