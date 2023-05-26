@@ -112,16 +112,17 @@ pipeline {
 					echo "Deploy DEV"
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
+							//openshift.selector('dc', "springbootsra").rollout().latest();
+							//
+							//if(!deployment.exists()){ 
+                			//	openshift.newApp('springbootsra', "--as-deployment-config").narrow('svc').expose() 
+              				//} 
+							//
+              				//timeout(5) { 
+                			//	openshift.selector('dc', "springbootsra").related('pods').untilEach(1) { 
+                  			//		return (it.object().status.phase == "Running") 
+                			//	} 
 							openshift.selector('dc', "springbootsra").rollout().latest();
-
-							if(!deployment.exists()){ 
-                				openshift.newApp('springbootsra', "--as-deployment-config").narrow('svc').expose() 
-              				} 
-    
-              				timeout(5) { 
-                				openshift.selector('dc', "springbootsra").related('pods').untilEach(1) { 
-                  					return (it.object().status.phase == "Running") 
-                				} 
               				}
 						}
 					}
