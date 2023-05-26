@@ -97,9 +97,9 @@ pipeline {
 							//openshift.set("probe dc/springbootsra --liveness  --get-url=http://:8080/actuator/health --initial-delay-seconds=180 --failure-threshold=10 --period-seconds=10")
 			
 							def dc = openshift.selector("dc", "springbootsra")
-							while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
-								sleep 10
-							}
+							//while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
+							//	sleep 10
+							//}
 							openshift.set("triggers", "dc/springbootsra", "--manual")
 						}
 					}
