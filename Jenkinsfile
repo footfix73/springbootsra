@@ -65,7 +65,7 @@ pipeline {
 				script {
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
-							openshift.selector("bc", "demo-1-app").startBuild("--from-dir=./ocp","--follow", "--wait=true")
+							openshift.selector("bc", "springbootsra").startBuild("--from-dir=./ocp","--follow", "--wait=true")
 						}
 					}
 				}
@@ -77,7 +77,7 @@ pipeline {
 				expression {
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
-							return !openshift.selector('dc', 'demo-1-app').exists()
+							return !openshift.selector('dc', 'springbootsra').exists()
 						}
 					}
 				}
@@ -87,18 +87,18 @@ pipeline {
 				script {
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
-							def app = openshift.newApp("demo-1-app:latest")
+							def app = openshift.newApp("springbootsra:latest")
 							app.narrow("svc").expose();
 
 							//http://localhost:8080/actuator/health
-							openshift.set("probe dc/demo-1-app --readiness --get-url=http://:8080/actuator/health --initial-delay-seconds=30 --failure-threshold=10 --period-seconds=10")
-							openshift.set("probe dc/demo-1-app --liveness  --get-url=http://:8080/actuator/health --initial-delay-seconds=180 --failure-threshold=10 --period-seconds=10")
+							openshift.set("probe dc/springbootsra --readiness --get-url=http://:8080/actuator/health --initial-delay-seconds=30 --failure-threshold=10 --period-seconds=10")
+							openshift.set("probe dc/springbootsra --liveness  --get-url=http://:8080/actuator/health --initial-delay-seconds=180 --failure-threshold=10 --period-seconds=10")
 
-							def dc = openshift.selector("dc", "demo-1-app")
+							def dc = openshift.selector("dc", "springbootsra")
 							while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
 								sleep 10
 							}
-							openshift.set("triggers", "dc/demo-1-app", "--manual")
+							openshift.set("triggers", "dc/springbootsra", "--manual")
 						}
 					}
 				}
@@ -110,7 +110,7 @@ pipeline {
 				script {
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
-							openshift.selector("dc", "demo-1-app").rollout().latest();
+							openshift.selector("dc", "springbootsra").rollout().latest();
 						}
 					}
 				}
