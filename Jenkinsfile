@@ -49,7 +49,7 @@ pipeline {
 				script {
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
-							openshift.newBuild("--name=springbootsra", "--docker-image=registry.redhat.io/jboss-eap-7/eap74-openjdk8-openshift-rhel7", "--binary") 
+							openshift.newBuild("--name=springbootsra", "--docker-image=registry.redhat.io/jboss-eap-7/eap74-openjdk11-openshift-rhel8", "--binary") 
 						}
 					}
 				}
@@ -60,7 +60,7 @@ pipeline {
 			steps {
 				sh "rm -rf ocp && mkdir -p ocp/deployments"
 				sh "pwd && ls -la target "
-				sh "cp target/k8sistio-*.jar ocp/deployments"
+				sh "cp target/spring-boot-*.jar ocp/deployments"
 
 				script {
 					openshift.withCluster() {
