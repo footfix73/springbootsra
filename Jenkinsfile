@@ -92,8 +92,8 @@ pipeline {
 						openshift.withProject("vicentegarcia-dev") {
 							def app = openshift.newApp('springbootsra', "--as-deployment-config").narrow('svc').expose()
 			
-							//openshift.set("probe dc/springbootsra --readiness --get-url=http://:8080/actuator/health --initial-delay-seconds=30 --failure-threshold=10 --period-seconds=10")
-							//openshift.set("probe dc/springbootsra --liveness  --get-url=http://:8080/actuator/health --initial-delay-seconds=180 --failure-threshold=10 --period-seconds=10")
+							openshift.set("probe dc/springbootsra --readiness --get-url=http://:8080/actuator/health --initial-delay-seconds=30 --failure-threshold=10 --period-seconds=10")
+							openshift.set("probe dc/springbootsra --liveness  --get-url=http://:8080/actuator/health --initial-delay-seconds=180 --failure-threshold=10 --period-seconds=10")
 			
 							//def dc = openshift.selector("dc", "springbootsra")
 							//while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
