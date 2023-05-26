@@ -47,6 +47,7 @@ pipeline {
             }
             steps {
 				script {
+					echo "Create Image Builder"
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
 							openshift.newBuild("--name=springbootsra", "--docker-image=registry.redhat.io/jboss-eap-7/eap74-openjdk11-openshift-rhel8", "--binary") 
@@ -63,6 +64,7 @@ pipeline {
 				sh "cp target/spring-boot-*.jar ocp/deployments"
 
 				script {
+					echo "Build Image"
 					openshift.withCluster() {
 						openshift.withProject("vicentegarcia-dev") {
 							openshift.selector("bc", "springbootsra").startBuild("--from-dir=./ocp","--follow", "--wait=true")
@@ -83,14 +85,14 @@ pipeline {
 				}
             }
 			
-            //steps {
-			//	script {
-			//		openshift.withCluster() {
-			//			openshift.withProject("vicentegarcia-dev") {
-			//				def app = openshift.newApp("springbootsra:latest")
-			//				app.narrow("svc").expose();
-			//
-			//				//http://localhost:8080/actuator/health
+            steps {
+				script {
+					echo "Create DEV"
+					openshift.withCluster() {
+						openshift.withProject("vicentegarcia-dev") {
+							def app = openshift.newApp("springbootsra:latest")
+							app.narrow("svc").expose();
+			
 			//				openshift.set("probe dc/springbootsra --readiness --get-url=http://:8080/actuator/health --initial-delay-seconds=30 --failure-threshold=10 --period-seconds=10")
 			//				openshift.set("probe dc/springbootsra --liveness  --get-url=http://:8080/actuator/health --initial-delay-seconds=180 --failure-threshold=10 --period-seconds=10")
 			//
@@ -100,9 +102,9 @@ pipeline {
 			//				}
 			//				openshift.set("triggers", "dc/springbootsra", "--manual")
 			//			}
-			//		}
-			//	}
-            //}
+					}
+				}
+            }
 		}		  
 		
 		stage('Deploy DEV') {
