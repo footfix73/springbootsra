@@ -60,64 +60,15 @@ A continuación, tomamos el artefacto y construimos una imagen de contenedor. La
 
 S2I está integrado en OpenShift. Pero para acceder a él, necesitamos utilizar el complemento OpenShift Jenkins Client. **Afortunadamente, este complemento ya está incluido en las imágenes de contenedor de Jenkins en OpenShift.**
 
-Primero, volvemos a la consola de OpenShift y obtenemos el nombre de nuestro proyecto.
+Aqui modificamos el jenkinsfile si quiere añadir etapas si se necesita.
 
-Luego, en la etapa **"Create Container Image"** del Jenkinsfile, agrega lo siguiente entre las etiquetas de script.  Nos aseguramos de reemplazar el nombre del proyecto con el tuyo.
-````
-openshift.withCluster() { 
-  openshift.withProject("<tu_nombre_proyecto>") {
-  
-    def buildConfigExists = openshift.selector("bc", "springbootsra").exists() 
-    
-    if(!buildConfigExists){ 
-      openshift.newBuild("--name=springbootsra", "--docker-image=registry.redhat.io/jboss-eap-7/eap74-openjdk8-openshift-rhel7", "--binary") 
-    } 
-    
-    openshift.selector("bc", "springbootsra").startBuild("--from-file=target/simple-servlet-0.0.1-SNAPSHOT.war", "--follow") } }
-````
-
-Utilizando el complemento de OpenShift, el código realiza algunas acciones:
-
-- **Verificar si existe una configuración de construcción (build config)**. No queremos crear una en cada ejecución del pipeline. 
-
-- **Crear una configuración de construcción (build config)**. Las BuildConfigs describen cómo se construyen las imágenes de contenedor en OpenShift. 
-
-- **Iniciar una nueva construcción (build)**. Source to Image puede utilizar código fuente o un binario. Aquí se tomará nuestro archivo WAR y la imagen del compilador para construir un contenedor ejecutable. 
-
-Finalmente, necesitamos desplegar nuestro contenedor en OpenShift. Bajo el bloque de pasos (steps) en la etapa "Desplegar" (Deploy), añadimos lo siguiente entre las etiquetas de script. Asegúrate de reemplazar el nombre del proyecto con el tuyo.
-
-```
-openshift.withCluster() { 
-  openshift.withProject("<tu_nombre_proyecto") { 
-    def deployment = openshift.selector("dc", "springbootsra") 
-    
-    if(!deployment.exists()){ 
-      openshift.newApp('springbootsra', "--as-deployment-config").narrow('svc').expose() 
-    } 
-    
-    timeout(5) { 
-      openshift.selector("dc", "springbootsra").related('pods').untilEach(1) { 
-        return (it.object().status.phase == "Running") 
-      } 
-    } 
-  } 
-}
-```
-
-Al igual que con nuestra configuración de construcción (build config), verificamos si existe un despliegue existente. Si no existe, crearemos una nueva aplicación. `oc new-app` crea todos los recursos necesarios para desplegar tu contenedor. Una vez que se haya completado, obtendremos una URL para acceder a la aplicación.
-
-La última línea nos ayuda a monitorear el estado de este despliegue. Solo queremos marcar esta etapa como completada cuando nuestros contenedores estén en ejecución.
-
-Guarda los cambios y haz push a tu repositorio.
-```
-git add . && git commit -m “Update jenkins pipeline” && git push
 ```
 ## Paso 3: Crear la Configuración de Construcción 
 Ahora que tenemos nuestro pipeline de Jenkins, necesitamos indicarle a OpenShift que lo utilice para nuestras construcciones. Para ello, utilizaremos una BuildConfig.
 
 Selecciona **"Builds"** en la consola y luego haz clic en **"Create BuildConfig"**.
 
-Cambia el nombre de tu configuración de construcción a `mi-pipeline`. A continuación, actualizamos la URI de Git y la referencia (ref) para que coincida con tu repositorio de Git. Aquí es donde buscará tu archivo de pipeline de Jenkins.
+Cambia el nombre de tu configuración de construcción a `sra-pipeline`. A continuación, actualizamos la URI de Git y la referencia (ref) para que coincida con tu repositorio de Git. Aquí es donde buscará tu archivo de pipeline de Jenkins.
 ```
 uri: <tu-repo-url> 
 ref: openshift-jenkins-pipeline
@@ -135,7 +86,7 @@ Finalmente, agregamos un **webhook** a la configuración de construcción. Abre 
 Cuando se cargue, ingresa lo siguiente:
 
 ```
-oc set triggers bc/mi-pipeline --from-github
+oc set triggers bc/sra-pipeline --from-github
 ```
 
 Cierra la terminal y regresa a la configuración de construcción. Cuando actualices la página, deberías ver un webhook en la parte inferior. Haz clic en **"Copy URL with secret"**.
@@ -157,7 +108,7 @@ cd src/main/java/org/springbootsra/servlet
 ```
 Abre **SimpleServlet.java** y cambia el texto "Hola Mundo" por "Hola <tu-nombre>" o lo que se quiera poner. Guarda los cambios y haz push a tu repositorio.
 
-Regresa a tu configuración de construcción (**mi-pipeline**) y haz clic en "**Builds**". Selecciona la construcción recién iniciada y deberías ver las etapas del pipeline en ejecución.
+Regresa a tu configuración de construcción (**sra-pipeline**) y haz clic en "**Builds**". Selecciona la construcción recién iniciada y deberías ver las etapas del pipeline en ejecución.
 
 Cuando haya terminado, regresamos a la **"Topology"**. Haz clic en la aplicación llamada **springbootsra** y encuentra la URL de ruta en la parte inferior. Navega a <route_url>/simple-servlet-0.0.1-SNAPSHOT/SimpleServlet.
 
