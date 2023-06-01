@@ -42,6 +42,7 @@ En primer lugar, hacemos un **fork** del repositorio de código fuente de ejempl
 
 ````
 git clone <your_url> 
+git checkout openshift-jenkins-pipeline 
 cd springbootsra
 ````
 
